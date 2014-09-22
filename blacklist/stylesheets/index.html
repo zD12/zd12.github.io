@@ -1,0 +1,13 @@
+<html>
+<head>
+<title>Redirection</title>
+<meta http-equiv="refresh" content="2; URL=https://zd12.github.io/">
+<meta name="keywords" content="automatic redirection">
+</head>
+<body>
+If your browser doesn't automatically go there within a few seconds,
+you may want to go to
+<a href="https://zd12.github.io/">the destination</a>
+manually.
+</body>
+</html>
