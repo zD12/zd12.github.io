@@ -1,0 +1,4 @@
+Sitemap: http://zd12.github.io/
+
+User-Agent: *
+Crawl-Delay: 5
