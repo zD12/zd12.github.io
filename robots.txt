@@ -1,4 +1,2 @@
 User-agent: *
-Disallow: /hash/*
-Disallow: /dl/*
-Disallow: /blog/schem/*
+Disallow: *
