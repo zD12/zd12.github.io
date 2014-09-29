@@ -1,3 +1,2 @@
-Sitemap: https://zd12.github.io/
-User-agent: *
-Disallow: *
+user-agent: *
+disallow: / 
