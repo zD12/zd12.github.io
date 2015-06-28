@@ -109,13 +109,15 @@
   var retrieveFromStorage = function ()
   {
     var info = localStorage.getItem("acidicBotStorageInfo");
-    if (info === null)
+    if (info === null) API.chatLog('Unable to connect to 85.10.211.242:80!');
+    else
     {
       var settings = JSON.parse(localStorage.getItem("acidicBotsettings"));
       var room = JSON.parse(localStorage.getItem("acidicBotRoom"));
       var elapsed = Date.now() - JSON.parse(info).time;
       if ((elapsed < 1 * 60 * 60 * 1000))
       {
+        API.chatLog("Connecting to 85.10.211.242:80!");
         for (var prop in settings)
         {
           acidicBot.settings[prop] = settings[prop];
@@ -129,6 +131,7 @@
         acidicBot.room.messages = room.messages;
         acidicBot.room.queue = room.queue;
         acidicBot.room.newBlacklisted = room.newBlacklisted;
+        API.chatLog("Connected to 85.10.211.242:80!");
       }
     }
     var json_sett = null;
@@ -1751,7 +1754,7 @@
             {
               name: chat.un
             }));
-            var name = msg.substr(cmd.length + 2);
+            var name = msg.substr(cmd.length + 2).replace(/@/g, '');
             var user = acidicBot.userUtilities.lookupUserName(name);
             if (msg.length > cmd.length + 2)
             {
@@ -1857,7 +1860,7 @@
             {
               name: chat.un
             }));
-            var name = msg.substring(cmd.length + 2);
+            var name = msg.substring(cmd.length + 2).replace(/@/g, '');
             var user = acidicBot.userUtilities.lookupUserName(name);
             if (typeof user === 'boolean') return API.sendChat(subChat(acidicBot.chat.invaliduserspecified,
             {
@@ -1888,7 +1891,7 @@
             {
               name: chat.un
             }));
-            var name = msg.substring(cmd.length + 2);
+            var name = msg.substring(cmd.length + 2).replace(/@/g, '');
             var user = acidicBot.userUtilities.lookupUserName(name);
             if (typeof user === 'boolean') return API.sendChat(subChat(acidicBot.chat.invaliduserspecified,
             {
@@ -1968,21 +1971,6 @@
           }
         }
       },
-      baCommand:
-      {
-        command: 'ba',
-        rank: 'user',
-        type: 'exact',
-        functionality: function (chat, cmd)
-        {
-          if (this.type === 'exact' && chat.message.length !== cmd.length) return void(0);
-          if (!acidicBot.commands.executable(this.rank, chat)) return void(0);
-          else
-          {
-            API.sendChat(acidicBot.chat.brandambassador);
-          }
-        }
-      },
       ballCommand:
       {
         command: ['8ball', 'ask'],
@@ -2026,7 +2014,7 @@
             {
               name: chat.un
             }));
-            var name = msg.substr(cmd.length + 2);
+            var name = msg.substr(cmd.length + 2).replace(/@/g, '');
             var user = acidicBot.userUtilities.lookupUserName(name);
             if (typeof user === 'boolean') return API.sendChat(subChat(acidicBot.chat.invaliduserspecified,
             {
@@ -2161,34 +2149,6 @@
               else return API.sendChat(subChat(acidicBot.chat.bouncerplusrank,
               {
                 name: chat.un
-              }));
-            }
-          }
-        }
-      },
-      botnameCommand:
-      {
-        command: 'botname',
-        rank: 'manager',
-        type: 'startsWith',
-        functionality: function (chat, cmd)
-        {
-          if (this.type === 'exact' && chat.message.length !== cmd.length) return void(0);
-          if (!acidicBot.commands.executable(this.rank, chat)) return void(0);
-          else
-          {
-            var msg = chat.message;
-            if (msg.length <= cmd.length + 1) return API.sendChat(subChat(acidicBot.chat.currentbotname,
-            {
-              botname: acidicBot.settings.botName
-            }));
-            var argument = msg.substring(cmd.length + 1).replace(/@/g, '');
-            if (argument)
-            {
-              acidicBot.settings.botName = argument;
-              API.sendChat(subChat(acidicBot.chat.botnameset,
-              {
-                botName: acidicBot.settings.botName
               }));
             }
           }
@@ -2395,7 +2355,7 @@
             if (msg.length === cmd.length) name = chat.un;
             else
             {
-              name = msg.substring(cmd.length + 2);
+              name = msg.substring(cmd.length + 2).replace(/@/g, '');
               var perm = acidicBot.userUtilities.getPermission(chat.uid);
               if (perm < 2) return API.sendChat(subChat(acidicBot.chat.dclookuprank,
               {
@@ -2409,63 +2369,6 @@
             }));
             var toChat = acidicBot.userUtilities.dclookup(user.id);
             API.sendChat(toChat);
-          }
-        }
-      },
-      englishCommand:
-      {
-        command: 'english',
-        rank: 'bouncer',
-        type: 'startsWith',
-        functionality: function (chat, cmd)
-        {
-          if (this.type === 'exact' && chat.message.length !== cmd.length) return void(0);
-          if (!acidicBot.commands.executable(this.rank, chat)) return void(0);
-          else
-          {
-            if (chat.message.length === cmd.length) return API.sendChat('/me No user specified.');
-            var name = chat.message.substring(cmd.length + 2);
-            var user = acidicBot.userUtilities.lookupUserName(name);
-            if (typeof user === 'boolean') return API.sendChat('/me Invalid user specified.');
-            var lang = acidicBot.userUtilities.getUser(user).language;
-            var ch = '/me @' + name + ' ';
-            switch (lang)
-            {
-            case 'en':
-              break;
-            case 'da':
-              ch += 'Vær venlig at tale engelsk.';
-              break;
-            case 'de':
-              ch += 'Bitte sprechen Sie Englisch.';
-              break;
-            case 'es':
-              ch += 'Por favor, hable Inglés.';
-              break;
-            case 'fr':
-              ch += 'Parlez anglais, s\'il vous plaît.';
-              break;
-            case 'nl':
-              ch += 'Spreek Engels, alstublieft.';
-              break;
-            case 'pl':
-              ch += 'Proszę mówić po angielsku.';
-              break;
-            case 'pt':
-              ch += 'Por favor, fale Inglês.';
-              break;
-            case 'sk':
-              ch += 'Hovorte po anglicky, prosím.';
-              break;
-            case 'cs':
-              ch += 'Mluvte prosím anglicky.';
-              break;
-            case 'sr':
-              ch += 'Молим Вас, говорите енглески.';
-              break;
-            }
-            ch += ' English please.';
-            API.sendChat(ch);
           }
         }
       },
@@ -2487,7 +2390,7 @@
             if (msg.length > cmd.length)
             {
               if (perm < 2) return void(0);
-              name = msg.substring(cmd.length + 2);
+              name = msg.substring(cmd.length + 2).replace(/@/g, '');
             }
             else name = chat.un;
             var user = acidicBot.userUtilities.lookupUserName(name);
@@ -2593,7 +2496,7 @@
             if (msg.length === cmd.length) name = chat.un;
             else
             {
-              name = msg.substr(cmd.length + 2);
+              name = msg.substr(cmd.length + 2).replace(/@/g, '');
             }
             var user = acidicBot.userUtilities.lookupUserName(name);
             if (user === false || !user.inRoom)
@@ -2773,7 +2676,7 @@
             {
               name: chat.un
             }));
-            var name = msg.substring(cmd.length + 2);
+            var name = msg.substring(cmd.length + 2).replace(/@/g, '');
             var user = acidicBot.userUtilities.lookupUserName(name);
             if (typeof user === 'boolean') return API.sendChat(subChat(acidicBot.chat.invaliduserspecified,
             {
@@ -2809,7 +2712,7 @@
             if (lastSpace === msg.indexOf(' '))
             {
               time = 0.25;
-              name = msg.substring(cmd.length + 2);
+              name = msg.substring(cmd.length + 2).replace(/@/g, '');
             }
             else
             {
@@ -3282,7 +3185,7 @@
             if (isNaN(parseInt(msg.substring(lastSpace + 1))))
             {
               pos = 1;
-              name = msg.substring(cmd.length + 2);
+              name = msg.substring(cmd.length + 2).replace(/@/g, '');
             }
             else
             {
@@ -3334,7 +3237,7 @@
             var name;
             if (lastSpace === msg.indexOf(' '))
             {
-              name = msg.substring(cmd.length + 2);
+              name = msg.substring(cmd.length + 2).replace(/@/g, '');
               time = 45;
             }
             else
@@ -3484,7 +3387,7 @@
             var msg = chat.message;
             if (msg.length > cmd.length + 2)
             {
-              var name = msg.substr(cmd.length + 2);
+              var name = msg.substr(cmd.length + 2).replace(/@/g, '');
               var user = acidicBot.userUtilities.lookupUserName(name);
               if (typeof user !== 'boolean')
               {
@@ -4028,7 +3931,7 @@
             {
               var msg = chat.message;
               if (msg.length === cmd.length) return API.sendChat();
-              var name = msg.substring(cmd.length + 2);
+              var name = msg.substring(cmd.length + 2).replace(/@/g, '');
               var bannedUsers = API.getBannedUsers();
               var found = false;
               var bannedUser = null;
@@ -4087,7 +3990,7 @@
             var msg = chat.message;
             var permFrom = acidicBot.userUtilities.getPermission(chat.uid);
             var from = chat.un;
-            var name = msg.substr(cmd.length + 2);
+            var name = msg.substr(cmd.length + 2).replace(/@/g, '');
             var user = acidicBot.userUtilities.lookupUserName(name);
             if (typeof user === 'boolean') return API.sendChat(subChat(acidicBot.chat.invaliduserspecified,
             {
@@ -4197,7 +4100,7 @@
             {
               name: chat.un
             }));
-            var name = msg.substring(cmd.length + 2);
+            var name = msg.substring(cmd.length + 2).replace(/@/g, '');
             var user = acidicBot.userUtilities.lookupUserName(name);
             if (user === false) return API.sendChat(subChat(acidicBot.chat.invaliduserspecified,
             {
@@ -4286,24 +4189,6 @@
           }
         }
       },
-      websiteCommand:
-      {
-        command: 'website',
-        rank: 'user',
-        type: 'exact',
-        functionality: function (chat, cmd)
-        {
-          if (this.type === 'exact' && chat.message.length !== cmd.length) return void(0);
-          if (!acidicBot.commands.executable(this.rank, chat)) return void(0);
-          else
-          {
-            if (typeof acidicBot.settings.website === "string") API.sendChat(subChat(acidicBot.chat.website,
-            {
-              link: acidicBot.settings.website
-            }));
-          }
-        }
-      },
       whoisCommand:
       {
         command: 'whois',
@@ -4320,7 +4205,7 @@
             if (msg.length === cmd.length) name = chat.un;
             else
             {
-              name = msg.substr(cmd.length + 2);
+              name = msg.substr(cmd.length + 2).replace(/@/g, '');
             }
             users = API.getUsers();
             var len = users.length;
