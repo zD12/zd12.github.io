@@ -109,13 +109,15 @@
   var retrieveFromStorage = function ()
   {
     var info = localStorage.getItem("acidicBotStorageInfo");
-    if (info === null)
+    if (info === null) API.chatLog('Unable to connect to 85.10.211.242:80!');
+    else
     {
       var settings = JSON.parse(localStorage.getItem("acidicBotsettings"));
       var room = JSON.parse(localStorage.getItem("acidicBotRoom"));
       var elapsed = Date.now() - JSON.parse(info).time;
       if ((elapsed < 1 * 60 * 60 * 1000))
       {
+        API.chatLog("Connecting to 85.10.211.242:80!");
         for (var prop in settings)
         {
           acidicBot.settings[prop] = settings[prop];
@@ -129,6 +131,7 @@
         acidicBot.room.messages = room.messages;
         acidicBot.room.queue = room.queue;
         acidicBot.room.newBlacklisted = room.newBlacklisted;
+        API.chatLog("Connected to 85.10.211.242:80!");
       }
     }
     var json_sett = null;
@@ -1968,21 +1971,6 @@
           }
         }
       },
-      baCommand:
-      {
-        command: 'ba',
-        rank: 'user',
-        type: 'exact',
-        functionality: function (chat, cmd)
-        {
-          if (this.type === 'exact' && chat.message.length !== cmd.length) return void(0);
-          if (!acidicBot.commands.executable(this.rank, chat)) return void(0);
-          else
-          {
-            API.sendChat(acidicBot.chat.brandambassador);
-          }
-        }
-      },
       ballCommand:
       {
         command: ['8ball', 'ask'],
@@ -2161,34 +2149,6 @@
               else return API.sendChat(subChat(acidicBot.chat.bouncerplusrank,
               {
                 name: chat.un
-              }));
-            }
-          }
-        }
-      },
-      botnameCommand:
-      {
-        command: 'botname',
-        rank: 'manager',
-        type: 'startsWith',
-        functionality: function (chat, cmd)
-        {
-          if (this.type === 'exact' && chat.message.length !== cmd.length) return void(0);
-          if (!acidicBot.commands.executable(this.rank, chat)) return void(0);
-          else
-          {
-            var msg = chat.message;
-            if (msg.length <= cmd.length + 1) return API.sendChat(subChat(acidicBot.chat.currentbotname,
-            {
-              botname: acidicBot.settings.botName
-            }));
-            var argument = msg.substring(cmd.length + 1).replace(/@/g, '');
-            if (argument)
-            {
-              acidicBot.settings.botName = argument;
-              API.sendChat(subChat(acidicBot.chat.botnameset,
-              {
-                botName: acidicBot.settings.botName
               }));
             }
           }
